@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ginhawa</title>
+  <style>
+    * {
+      margin: 0;    
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fefde7;
+      overflow-x: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background-color: #0f3c2c;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo img {
+      height: 60px;
+      filter: brightness(0) invert(1);
+    }
+
+    .logo-text h1 {
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      user-select: none;
+    }
+
+    nav.top-nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    nav.top-nav button {
+      padding: 8px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      background-color: transparent;
+      color: white;
+      cursor: pointer;
+      transition: color 0.3s, border-bottom 0.3s;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    nav.top-nav button:hover {
+      color: #cbd18f;
+      border-bottom: 2px solid #cbd18f;
+    }
+
+    .content-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px 40px;
+      gap: 50px;
+    }
+
+    .main-content {
+      text-align: center;
+      color: #0f3c2c;
+      z-index: 1;
+    }
+
+    .main-content h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .main-content p {
+      font-size: 20px;
+      color: #2f513d;
+      margin-bottom: 30px;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 150px;
+      margin: 0 auto;
+    }
+
+    .buttons button {
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 30px;
+      background-color: #0f3c2c;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .buttons button:hover {
+      background-color: #2f513d;
+    }
+
+    .back-link {
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 30px;
+      background-color: transparent;
+      color: #0f3c2c;
+      cursor: pointer;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: underline;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .back-link:hover {
+      background-color: #dfead7;
+      color: #2f513d;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: left;
+      font-size: 16px;
+      color: #0f3c2c;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .footer {
+      text-align: center;
+      background-color: #fefde7;
+    }
+
+    .footer .seals {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer .seals img {
+      height: 40px;
+    }
+
+    .footer p {
+      font-size: 12px;
+      color: #0f3c2c;
+      line-height: 1.4;
+    }
+
+    .half-circle {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 550px;
+      height: 550px;
+      background-color: #0f3c2c;
+      border-top-left-radius: 550px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .tab-content h2 {
+      margin-bottom: 15px;
+      font-size: 24px;
+      color: #0f3c2c;
+    }
+
+    .tab-content p {
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="cream1.png" alt="Ginhawa Logo">
+      <div class="logo-text"></div>
+    </div>
+    <nav class="top-nav">
+      <button onclick="showTab('main')">HOME</button>
+      <button onclick="showTab('about')">ABOUT</button>
+      <button onclick="showTab('features')">FEATURES</button>
+      <button onclick="showTab('developer')">DEVELOPER</button>
+    </nav>
+  </header>
+
+  <div class="content-wrapper">
+    <div class="main-content">
+      <h1>GINHAWA</h1>
+      <p>Tulay sa serbisyong medikal, para sa bawat Pilipino</p>
+      <div class="buttons">
+        <button onclick="return false;">Patient</button>
+        <button onclick="return false;">Doctor</button>
+        <button onclick="return false;">Admin</button>
+        <span class="back-link" onclick="showTab('main')">Back</span>
+      </div>
+    </div>
+
+    <div id="about" class="tab-content">
+      <h2>ALAGA</h2>
+      <p>Ang Ginhawa ay nagbibigay ng pag-aalaga na higit pa sa karaniwang serbisyong medikal. Pinapakinggan namin ang iyong kwento, pinapahalagahan ang iyong kalagayan, at ginagabayan ka sa bawat hakbang ng iyong paglalakbay sa kalusugan. Ang aming alaga ay may malasakit, may puso, at may layuning mapabuti ang iyong buhay.</p>
+      <h2>KALINGA</h2>
+      <p>Sa Ginhawa, ang kalinga ay hindi lamang tulong—ito ay pag-unawang may damdamin. Iniintindi namin ang kultura, pangangailangan, at pinanggagalingan ng bawat isa, lalo na ang mga nasa malalayong lugar. Ang aming serbisyo ay isinasaalang-alang ang dignidad at karapatan ng bawat pasyente.</p>
+      <h2>SERBISYO</h2>
+      <p>Hatid namin ang serbisyong medikal na abot-kamay at maaasahan, saan ka man naroroon. Mula sa simpleng konsultasyon hanggang sa seryosong gabay sa kalusugan, ang aming sistema ay idinisenyo para sa madaling pag-access, maayos na daloy ng appointment, at tapat na pakikipag-ugnayan sa mga lisensyadong doktor.</p>
+    </div>
+
+    <div id="features" class="tab-content">
+      <h2>Features</h2>
+      <p>Ginhawa bridges the gap with smart tools for digital health access.</p>
+      <p>Madaling magpa-appointment para sa konsultasyon kasama ang lisensyadong doktor kahit kailan at saan ka man naroroon. Hindi mo na kailangang bumiyahe — pumili lang ng petsa at oras base sa availability ng doktor.</p>
+      <p>Nasa lungsod ka man o sa liblib na lugar, hatid ng Ginhawa ang serbisyong pangkalusugan sa iyo. Kailangan mo lang ng cellphone at internet connection.</p>
+      <p>Kilalanin muna ang iyong doktor bago ang konsultasyon. Tingnan ang kanilang espesyalisasyon, karanasan, at iskedyul ng availability.</p>
+      <p>Pwedeng gamitin ang Ginhawa sa iyong smartphone, tablet, o computer. Disenyong simple at madaling gamitin para sa mabilis at maginhawang access.</p>
+      <p>Pinahahalagahan namin ang iyong privacy. Lahat ng appointment at personal na impormasyon tungkol sa kalusugan ay ligtas at kompidensyal na pinangangalagaan.</p>
+    </div>
+
+    <div id="developer" class="tab-content">
+      <h2>The People Behind Ginhawa</h2>
+      <p><strong>ARIANE JADE BOTE</strong> – Frontend Developer</p>
+      <p><strong>PRECIOUS MAE DAMIAN</strong> – Frontend Developer</p>
+      <p><strong>KEER FRANCISCO</strong> – Backend Developer</p>
+      <p><strong>JUSTINE TABOR</strong> – Backend Developer</p>
+      <p><strong>HANNAH DE LEON</strong> – UI/UX Designer</p>
+      <p><strong>JOYCE MATNAO</strong> – UI/UX Designer</p>
+      <p><strong>PRINCE LORD MENDOZA</strong> – UI/UX Designer</p>
+      <p><strong>ENGR. OSCAR OGANIZA</strong> – Technical Adviser</p>
+      <p><strong>JAYSON RYAN CUNANAN</strong> – Technical Adviser</p>
+    </div>
+
+    <div id="patient" class="tab-content"></div>
+    <div id="doctor" class="tab-content"></div>
+    <div id="admin" class="tab-content"></div>
+    <div id="main" class="tab-content active"></div>
+
+    <div class="footer">
+      <div class="seals">
+        <img src="306832051_202846362089926_1566232891591064553_n.png" alt="Seal 1">
+        <img src="DICT-Logo-icon_only.png" alt="Seal 2">
+        <img src="Bagong_Pilipinas_logo.png" alt="Seal 3">
+        <img src="306913834_4807747755995243_9172039876570688208_n.png" alt="Seal 4">
+      </div>
+      <p>
+        Copyright © Ginhawa 2025<br />
+        Wesleyan University - Philippines Interns<br />
+        All Rights Reserved
+      </p>
+    </div>
+  </div>
+
+  <div class="half-circle"></div>
+
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+
+      const mainContent = document.querySelector('.main-content');
+      const halfCircle = document.querySelector('.half-circle');
+
+      if (tabId === 'main') {
+        mainContent.classList.remove('hidden');
+        halfCircle.style.display = 'block';
+      } else {
+        mainContent.classList.add('hidden');
+        halfCircle.style.display = 'none';
+      }
+    }
+
+    showTab('main');
+  </script>
+</body>
+</html>

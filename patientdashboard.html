@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
+    /* (Your existing styles remain unchanged) */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -186,7 +187,7 @@
     </div>
     <div class="nav">
       <a id="homeLink" class="active">Home</a>
-      <a id="appointmentLink">Appointment</a>
+      <a id="appointmentLink">Book Appointment</a>
       <a id="profileLink">Profile</a>
     </div>
   </div>
@@ -194,13 +195,17 @@
   <!-- HOME -->
   <div class="container" id="homeContainer">
     <h2 id="greeting">Mabuhay, Prince Lord!</h2>
-    <h3>Appointment</h3>
-    <div id="appointmentHistoryList"></div>
+
+    <h3>Ongoing Appointments</h3>
+    <div id="ongoingAppointments"></div>
+
+    <h3>Done Appointments</h3>
+    <div id="doneAppointments"></div>
   </div>
 
   <!-- APPOINTMENT -->
   <div class="container" id="appointmentContainer" style="display:none;">
-    <h2>Book an Appointment</h2>
+    <h2>Details</h2>
     <div class="form-group">
       <label for="doctorSelect">Doctor</label>
       <select id="doctorSelect">
@@ -220,7 +225,7 @@
         <option value="">Select a time</option>
       </select>
     </div>
-    <button id="bookBtn" disabled>Book Appointment</button>
+    <button id="bookBtn" disabled>Save</button>
 
     <h3>Current Session Appointments:</h3>
     <div id="appointmentList"></div>
@@ -279,193 +284,237 @@
     const appointmentContainer = document.getElementById('appointmentContainer');
     const profileContainer = document.getElementById('profileContainer');
 
-    const doctorSelect = document.getElementById('doctorSelect');
+    const appointmentHistory = [];
+
+    // Flatpickr date picker initialization
     const dateInput = document.getElementById('dateInput');
     const timeSelect = document.getElementById('timeSelect');
+    const doctorSelect = document.getElementById('doctorSelect');
     const bookBtn = document.getElementById('bookBtn');
 
-    const appointmentList = document.getElementById('appointmentList');
-    const appointmentHistoryList = document.getElementById('appointmentHistoryList');
+    // Navigation handlers
+    homeLink.addEventListener('click', () => {
+      setActiveNav(homeLink);
+      showSection(homeContainer);
+      renderAppointmentHistory();
+    });
 
-    const logoutBtn = document.getElementById('logoutBtn');
-    const logoutModal = document.getElementById('logoutModal');
-    const logoutYes = document.getElementById('logoutYes');
-    const logoutNo = document.getElementById('logoutNo');
+    appointmentLink.addEventListener('click', () => {
+      setActiveNav(appointmentLink);
+      showSection(appointmentContainer);
+      resetAppointmentForm();
+    });
 
-    const confirmBookingModal = document.getElementById('confirmBookingModal');
-    const confirmYesBtn = document.getElementById('confirmYesBtn');
-    const confirmNoBtn = document.getElementById('confirmNoBtn');
+    profileLink.addEventListener('click', () => {
+      setActiveNav(profileLink);
+      showSection(profileContainer);
+    });
 
-    // Utility: set active nav and show container
     function setActiveNav(activeLink) {
       [homeLink, appointmentLink, profileLink].forEach(link => {
         link.classList.remove('active');
       });
       activeLink.classList.add('active');
     }
-    function showContainer(container) {
-      [homeContainer, appointmentContainer, profileContainer].forEach(c => {
-        c.style.display = 'none';
+
+    function showSection(section) {
+      [homeContainer, appointmentContainer, profileContainer].forEach(sec => {
+        sec.style.display = 'none';
       });
-      container.style.display = 'block';
+      section.style.display = 'block';
     }
 
-    // Initialize Flatpickr for date input with constraints
-    const fp = flatpickr(dateInput, {
+    // Initialize date picker for appointment date with valid range
+    flatpickr(dateInput, {
       minDate: "today",
-      maxDate: new Date().fp_incr(7), // 7 days from now
       dateFormat: "Y-m-d",
-      onChange: function(selectedDates) {
-        if (selectedDates.length > 0) {
-          timeSelect.disabled = false;
-          populateTimes();
-          validateForm();
-        }
+      onChange: (selectedDates) => {
+        populateTimeSlots();
       }
     });
 
-    function resetDateTimeInputs() {
-      dateInput.value = '';
+    // When doctor is selected, enable date input
+    doctorSelect.addEventListener('change', () => {
+      if (doctorSelect.value) {
+        dateInput.removeAttribute('disabled');
+      } else {
+        dateInput.setAttribute('disabled', true);
+        timeSelect.setAttribute('disabled', true);
+        bookBtn.disabled = true;
+        timeSelect.innerHTML = '<option value="">Select a time</option>';
+      }
+    });
+
+    // Populate available time slots for selected date and doctor
+    function populateTimeSlots() {
       timeSelect.innerHTML = '<option value="">Select a time</option>';
       timeSelect.disabled = true;
       bookBtn.disabled = true;
-    }
 
-    function populateTimes() {
-      const times = [
-        "08:00 AM", "09:00 AM", "10:00 AM",
-        "01:00 PM", "02:00 PM", "03:00 PM"
-      ];
-      timeSelect.innerHTML = '<option value="">Select a time</option>';
-      times.forEach(t => {
-        const option = document.createElement('option');
-        option.value = t;
-        option.textContent = t;
-        timeSelect.appendChild(option);
-      });
-    }
+      const doctor = doctorSelect.value;
+      const date = dateInput.value;
 
-    function validateForm() {
-      if (doctorSelect.value && dateInput.value && timeSelect.value) {
-        bookBtn.disabled = false;
+      if (!doctor || !date) return;
+
+      // Predefined time slots
+      const allSlots = ["9:00 AM", "10:00 AM", "11:00 AM", "1:00 PM", "2:00 PM", "3:00 PM"];
+
+      // Filter out slots that are already booked for the selected doctor and date
+      const bookedSlots = appointmentHistory
+        .filter(a => a.doctor === doctor && a.date === date)
+        .map(a => a.time);
+
+      const availableSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
+
+      if (availableSlots.length === 0) {
+        timeSelect.innerHTML = '<option value="">No slots available</option>';
       } else {
-        bookBtn.disabled = true;
+        availableSlots.forEach(slot => {
+          const option = document.createElement('option');
+          option.value = slot;
+          option.textContent = slot;
+          timeSelect.appendChild(option);
+        });
+        timeSelect.disabled = false;
       }
     }
 
-    doctorSelect.addEventListener('change', () => {
-      resetDateTimeInputs();
-      if (doctorSelect.value) {
-        dateInput.disabled = false;
-      } else {
-        dateInput.disabled = true;
-      }
-      validateForm();
+    // Enable book button only if time is selected
+    timeSelect.addEventListener('change', () => {
+      bookBtn.disabled = !timeSelect.value;
     });
 
-    timeSelect.addEventListener('change', validateForm);
+    // Confirmation modal elements
+    const confirmBookingModal = document.getElementById('confirmBookingModal');
+    const confirmYesBtn = document.getElementById('confirmYesBtn');
+    const confirmNoBtn = document.getElementById('confirmNoBtn');
 
-    // Appointment storage per session
-    let appointments = [];
-
-    function renderAppointments() {
-      appointmentList.innerHTML = '';
-      if (appointments.length === 0) {
-        appointmentList.textContent = "No appointments in this session.";
-        return;
-      }
-      appointments.forEach((appt, idx) => {
-        const div = document.createElement('div');
-        div.classList.add('appointment-item');
-        div.textContent = `Doctor: ${appt.doctor}, Date: ${appt.date}, Time: ${appt.time}, Status: ${appt.status}`;
-        appointmentList.appendChild(div);
-      });
-    }
-
-    // For home: show all appointments with status (done or ongoing)
-    // For demo, we consider status property for appointments, with 'ongoing' or 'done'
-
-    // Simulate some previous appointments (could be fetched from backend or localStorage)
-    let appointmentHistory = [
-      {doctor: 'Dra. Ariane Jade Bote', date: '2025-05-18', time: '08:00 AM', status: 'done'},
-      {doctor: 'Dr. Justine Tabor', date: '2025-05-20', time: '02:00 PM', status: 'ongoing'}
-    ];
-
-    function renderAppointmentHistory() {
-      appointmentHistoryList.innerHTML = '';
-      if (appointmentHistory.length === 0) {
-        appointmentHistoryList.textContent = "No appointment history.";
-        return;
-      }
-      appointmentHistory.forEach(appt => {
-        const div = document.createElement('div');
-        div.classList.add('appointment-item');
-        div.textContent = `Doctor: ${appt.doctor}, Date: ${appt.date}, Time: ${appt.time}, Status: ${appt.status}`;
-        appointmentHistoryList.appendChild(div);
-      });
-    }
-
-    // Add new appointment to both session and history with status 'ongoing'
-    function addAppointment(doctor, date, time) {
-      const newAppt = {doctor, date, time, status: 'ongoing'};
-      appointments.push(newAppt);
-      appointmentHistory.push(newAppt);
-      renderAppointments();
-      renderAppointmentHistory();
-    }
-
-    // Navigation event listeners
-    homeLink.addEventListener('click', () => {
-      setActiveNav(homeLink);
-      showContainer(homeContainer);
-      renderAppointmentHistory();
-    });
-
-    appointmentLink.addEventListener('click', () => {
-      setActiveNav(appointmentLink);
-      showContainer(appointmentContainer);
-      renderAppointments();
-    });
-
-    profileLink.addEventListener('click', () => {
-      setActiveNav(profileLink);
-      showContainer(profileContainer);
-    });
-
-    // Initial render on load
-    renderAppointmentHistory();
-
-    // Booking confirmation modal logic
+    // Book appointment button click: show confirmation modal
     bookBtn.addEventListener('click', () => {
       confirmBookingModal.style.display = 'flex';
     });
 
+    // Confirm booking yes
     confirmYesBtn.addEventListener('click', () => {
-      addAppointment(doctorSelect.value, dateInput.value, timeSelect.value);
+      addAppointment();
       confirmBookingModal.style.display = 'none';
-      alert('Appointment booked successfully!');
-      // Reset form
-      doctorSelect.value = '';
-      resetDateTimeInputs();
     });
 
+    // Confirm booking no
     confirmNoBtn.addEventListener('click', () => {
       confirmBookingModal.style.display = 'none';
     });
 
-    // Logout modal logic
+    // Add appointment to history
+    function addAppointment() {
+      const newAppointment = {
+        doctor: doctorSelect.value,
+        date: dateInput.value,
+        time: timeSelect.value,
+        status: 'ongoing'
+      };
+      appointmentHistory.push(newAppointment);
+      renderAppointmentList();
+      resetAppointmentForm();
+      alert('Appointment booked successfully!');
+    }
+
+    // Reset appointment form
+    function resetAppointmentForm() {
+      doctorSelect.value = '';
+      dateInput.value = '';
+      dateInput.setAttribute('disabled', true);
+      timeSelect.innerHTML = '<option value="">Select a time</option>';
+      timeSelect.disabled = true;
+      bookBtn.disabled = true;
+      renderAppointmentList();
+    }
+
+    // Render current session appointments in Appointment section
+    function renderAppointmentList() {
+      const appointmentList = document.getElementById('appointmentList');
+      appointmentList.innerHTML = '';
+      if (appointmentHistory.length === 0) {
+        appointmentList.textContent = 'No appointments booked yet.';
+        return;
+      }
+      appointmentHistory.forEach((appt, index) => {
+        const div = document.createElement('div');
+        div.classList.add('appointment-item');
+        div.textContent = `Doctor: ${appt.doctor}, Date: ${appt.date}, Time: ${appt.time}`;
+        appointmentList.appendChild(div);
+      });
+    }
+
+    // Update statuses based on current date: move past appointments to done
+    function updateAppointmentStatuses() {
+      const today = new Date();
+      appointmentHistory.forEach(appt => {
+        const apptDate = new Date(appt.date + 'T00:00:00');
+        if (apptDate < today && appt.status === 'ongoing') {
+          appt.status = 'done';
+        }
+      });
+    }
+
+    // Render Home section appointment history split by ongoing/done
+    function renderAppointmentHistory() {
+      updateAppointmentStatuses();
+
+      const ongoingDiv = document.getElementById('ongoingAppointments');
+      const doneDiv = document.getElementById('doneAppointments');
+
+      ongoingDiv.innerHTML = '';
+      doneDiv.innerHTML = '';
+
+      const ongoing = appointmentHistory.filter(appt => appt.status === 'ongoing');
+      const done = appointmentHistory.filter(appt => appt.status === 'done');
+
+      if (ongoing.length === 0) {
+        ongoingDiv.textContent = 'No ongoing appointments.';
+      } else {
+        ongoing.forEach(appt => {
+          const div = document.createElement('div');
+          div.classList.add('appointment-item');
+          div.textContent = `Doctor: ${appt.doctor}, Date: ${appt.date}, Time: ${appt.time}`;
+          ongoingDiv.appendChild(div);
+        });
+      }
+
+      if (done.length === 0) {
+        doneDiv.textContent = 'No completed appointments.';
+      } else {
+        done.forEach(appt => {
+          const div = document.createElement('div');
+          div.classList.add('appointment-item');
+          div.textContent = `Doctor: ${appt.doctor}, Date: ${appt.date}, Time: ${appt.time}`;
+          doneDiv.appendChild(div);
+        });
+      }
+    }
+
+    // LOGOUT modal logic
+    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutModal = document.getElementById('logoutModal');
+    const logoutYes = document.getElementById('logoutYes');
+    const logoutNo = document.getElementById('logoutNo');
+
     logoutBtn.addEventListener('click', () => {
       logoutModal.style.display = 'flex';
     });
+
+    logoutYes.addEventListener('click', () => {
+      logoutModal.style.display = 'none';
+      alert('Logged out!');
+      // You can add redirect logic here
+    });
+
     logoutNo.addEventListener('click', () => {
       logoutModal.style.display = 'none';
     });
-    logoutYes.addEventListener('click', () => {
-      logoutModal.style.display = 'none';
-      alert('You have been logged out.');
-      // For demo, just reload page or you can redirect to login page
-      location.reload();
-    });
+
+    // Initial setup
+    renderAppointmentHistory();
   </script>
 </body>
 </html>

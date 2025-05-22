@@ -167,7 +167,7 @@
     }
 
     .calendar-day:hover {
-      background-color: #ffddc1;
+      background-color: #fff;
       cursor: pointer;
     }
 
@@ -253,16 +253,29 @@
     }
 
    .name-item:hover {
-  box-shadow: 0 6px 12px rgba(36, 64, 50, 0.5);
-  cursor: pointer;
-
+      box-shadow: 0 6px 12px rgba(36, 64, 50, 0.5);
+      cursor: pointer;
    }
-    .name-info {
+
+   .blur-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      backdrop-filter: blur(5px);
+      background-color: rgba(0, 0, 0, 0.2);
+      z-index: 999;
+}
+   .dialog {
+      z-index: 1000;
+}
+  .name-info {
       margin-bottom: 10px;
       font-size: 16px;
     }
 
-    .name-item button {
+  .name-item button {
       margin-top: 10px;
       width: 80px;
       margin-right: 10px;
@@ -277,7 +290,7 @@
     }
 
     /* Close Button Style */
-    .close-btn {
+  .close-btn {
       position: absolute;
       top: 10px;
       right: 10px;
@@ -285,7 +298,7 @@
       color: #244032;
       cursor: pointer;
     }
-
+    
   </style>
 
   <script>
@@ -313,44 +326,59 @@
 
     // Profile and Logout Dialog Functions
     function showProfile() {
-      const profileDialog = document.createElement('div');
-      profileDialog.classList.add('dialog');
-      profileDialog.innerHTML = ` 
-        <h3>Profile</h3>
-        <div><strong>Name:</strong> Dra. Ariane Jade Bote</div>
-        <div><strong>Contact Number:</strong> 09123456789</div>
-        <div><strong>Email:</strong> ariana@gmail.com</div>
-        <div><strong>Specialization:</strong> doctorkwakwak</div>
-        <button onclick="closeDialog()">Close</button>
-      `;
-      document.body.appendChild(profileDialog);
-      profileDialog.style.display = 'block';
-    }
+  const blur = document.createElement('div');
+  blur.className = 'blur-bg';
+  blur.id = 'blur-bg';
+  document.body.appendChild(blur);
 
-    function showLogout() {
-      const logoutDialog = document.createElement('div');
-      logoutDialog.classList.add('dialog');
-      logoutDialog.innerHTML = ` 
-        <h3>Are you sure you want to log out?</h3>
-        <button onclick="confirmLogout()">Yes</button>
-        <button onclick="closeDialog()">No</button>
-      `;
-      document.body.appendChild(logoutDialog);
-      logoutDialog.style.display = 'block';
-    }
+  const profileDialog = document.createElement('div');
+  profileDialog.classList.add('dialog');
+  profileDialog.innerHTML = ` 
+    <h3>Profile</h3>
+    <div><strong>Name:</strong> Dra. Ariane Jade Bote</div>
+    <div><strong>Contact Number:</strong> 09123456789</div>
+    <div><strong>Email:</strong> ariana@gmail.com</div>
+    <div><strong>Specialization:</strong> doctorkwakwak</div>
+    <button onclick="closeDialog()">Close</button>
+  `;
+  document.body.appendChild(profileDialog);
+  profileDialog.style.display = 'block';
+}
+
+
+   function showLogout() {
+  const blur = document.createElement('div');
+  blur.className = 'blur-bg';
+  blur.id = 'blur-bg';
+  document.body.appendChild(blur);
+
+  const logoutDialog = document.createElement('div');
+  logoutDialog.classList.add('dialog');
+  logoutDialog.innerHTML = ` 
+    <h3>Are you sure you want to log out?</h3>
+    <button onclick="confirmLogout()">Yes</button>
+    <button onclick="closeDialog()">No</button>
+  `;
+  document.body.appendChild(logoutDialog);
+  logoutDialog.style.display = 'block';
+}
+
 
     function confirmLogout() {
       alert('Logged out successfully');
       closeDialog();
     }
 
-    function closeDialog() {
-      const dialogs = document.querySelectorAll('.dialog');
-      dialogs.forEach(dialog => {
-        dialog.style.display = 'none';
-        dialog.remove();
-      });
-    }
+   function closeDialog() {
+  const dialogs = document.querySelectorAll('.dialog');
+  dialogs.forEach(dialog => {
+    dialog.style.display = 'none';
+    dialog.remove();
+  });
+  const blur = document.getElementById('blur-bg');
+  if (blur) blur.remove();
+}
+
 
     // Patient and Schedule functionality
     function showNames(type) {

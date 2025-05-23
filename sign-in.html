@@ -30,6 +30,7 @@
     }
 
     .branding {
+      margin-left: 100px;
       display: flex;
       align-items: center;
       gap: 1rem;
@@ -186,7 +187,7 @@
 
     .bottom-logos .copyright {
       font-size: 10px;
-      color: #ffffff;
+      color: #FBFADA;
       line-height: 1.3;
     }
   </style>
@@ -194,7 +195,11 @@
 <body>
   <div class="left-panel">
     <div class="branding">
-      <img src="cream1.png" alt="GINHAWA Logo" class="logo" />
+      <a href="main page.html">
+        <img src="cream1.png" alt="GINHAWA Logo" class="logo" style="cursor: pointer;" />
+      </a>
+      <div class="text-content">
+      </div>
     </div>
 
     <!-- Removed logos here -->
@@ -219,26 +224,26 @@
   </div>
 
   <div class="right-panel">
-    <form>
+    <form action="register.php" method="POST">
       <h2>Create Account</h2>
       <div class="form-group">
         <div class="input-wrapper">
           <label for="firstName">First Name / Unang Pangalan</label>
-          <input id="firstName" type="text" placeholder=" " />
+          <input id="firstName" name="firstName" type="text" placeholder=" " required />
         </div>
         <div class="input-wrapper">
           <label for="lastName">Last Name / Huling Pangalan</label>
-          <input id="lastName" type="text" placeholder=" " />
+          <input id="lastName" name="lastName" type="text" placeholder=" " required/>
         </div>
       </div>
       <div class="form-group">
         <div class="input-wrapper">
           <label for="age">Age / Edad</label>
-          <input id="age" type="number" placeholder=" " />
+          <input id="age" name="age" type="number" placeholder=" " required/>
         </div>
         <div class="input-wrapper">
           <label for="sex">Sex / Kasarian</label>
-          <select id="sex">
+          <select id="sex" name="sex" required>
             <option value="">Select</option>
             <option value="female/babae">Female/Babae</option>
             <option value="male/lalaki">Male/Lalaki</option>
@@ -248,18 +253,55 @@
       <div class="form-group">
         <div class="input-wrapper">
           <label for="phoneNumber">Phone Number</label>
-          <input id="phoneNumber" type="tel" placeholder=" " />
+          <input id="phoneNumber" name="phoneNumber" type="tel" placeholder=" " required/>
         </div>
         <div class="input-wrapper">
           <label for="password">Password</label>
-          <input id="password" type="password" placeholder=" " />
+          <input id="password" name="password" type="password" placeholder=" " required/>
         </div>
       </div>
       <div class="form-footer">
-        <a href="#">Back</a>
+        <a href="main page.html">Back</a>
         <button type="submit">Sign In</button>
       </div>
     </form>
   </div>
+
+    </div> <!-- End of right-panel -->
+
+  <!--Success Message Banner START -->
+  <div id="successOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 9999;">
+</div>
+
+<!-- Success Message Box -->
+<div id="successMessage" style="display: none; position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #12372A; color: #FBFADA; padding: 30px 40px; border: 2px solid #12372A;
+    border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 10000; text-align: center;
+    font-size: 20px;">
+  <p style="margin-bottom: 20px; font-weight: bold;"> Registered Successfully!</p>
+  <button onclick="redirectToLogin()" style="background-color: #155724; color: #FBFADA; border: none;
+      padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer;">
+    Continue
+  </button>
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('registered') === '1') {
+    document.getElementById('successMessage').style.display = 'block';
+    document.getElementById('successOverlay').style.display = 'block';
+  }
+
+  function redirectToLogin() {
+    window.location.href = 'login.html'; // Change to your actual login page
+  }
+</script>
+  <!-- ✅ Success Message Banner END -->
+
+</body>
+</html>
+
 </body>
 </html>
